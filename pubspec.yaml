@@ -47,6 +47,7 @@ dependencies:
   confetti: ^0.8.0
   flutter_acrylic: ^1.1.4
   flutter_launcher_icons: ^0.14.3
+  path_provider: ^2.1.5
   # camera: ^0.11.1
 
 dev_dependencies:

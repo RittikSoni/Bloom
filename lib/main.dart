@@ -14,6 +14,8 @@ import 'package:win32/win32.dart';
 import 'package:loom_rs/helper.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,6 +92,7 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
   bool _isRecording = false;
   bool _isPaused = false;
   int _segmentIndex = 0;
+  bool _runInShell = false;
 
   late final ref;
 
@@ -110,13 +113,35 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
   Set<String> _availableWindows = {};
   String? _selectedWindow;
 
-  String get _ffmpegPath {
+  Future<String> get _ffmpegPath async {
     if (Platform.isWindows) {
       return 'C:/dev/ffmpeg-7.1.1-full_build/bin/ffmpeg.exe';
     } else if (Platform.isMacOS) {
-      return '/Users/rittiksoni/Desktop/rs_bloom/assets/ffmpeg/mac/ffmpeg';
+      // return '/Users/rittiksoni/Desktop/rs_bloom/assets/ffmpeg/mac/ffmpeg';
+      return await prepareFfmpeg();
     }
     return 'ffmpeg';
+  }
+
+  /// Copies the bundled ffmpeg binary to a directory your app can exec,
+  /// re‑sets the +x bit, and returns its absolute path.
+  Future<String> prepareFfmpeg() async {
+    // 1. Where our app can write & exec
+    final supportDir = await getApplicationSupportDirectory();
+    final dest = File(p.join(supportDir.path, 'ffmpeg'));
+
+    // 2. Locate the bundled binary in Runner.app/Contents/Resources
+    final exec = File(Platform.resolvedExecutable);
+    final resources = exec.parent.parent.path + '/Resources';
+    final bundled = File(p.join(resources, 'ffmpeg'));
+
+    // 3. Copy it out & ensure +x
+    final bytes = await bundled.readAsBytes();
+    await dest.writeAsBytes(bytes, flush: true);
+
+    await Process.run('chmod', ['+x', dest.path]);
+
+    return dest.path;
   }
 
   @override
@@ -185,8 +210,13 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
     }
 
     // Create relative and absolute filenames.
+    // final segmentFilename = 'segment_$_segmentIndex.ts';
+    // final fullPath = 'recordings/$segmentFilename';
+    // _segmentIndex++;
+
+    // 2) build file names
     final segmentFilename = 'segment_$_segmentIndex.ts';
-    final fullPath = 'recordings/$segmentFilename';
+    final fullPath = p.join(recordingsDir.path, segmentFilename);
     _segmentIndex++;
 
     // Build FFmpeg arguments.
@@ -261,11 +291,12 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
       fullPath,
     ]);
 
+    final ffpath = await _ffmpegPath;
     // Start the FFmpeg process.
     _ffmpegProcess = await Process.start(
-      _ffmpegPath,
+      ffpath,
       ffmpegArgs,
-      runInShell: true,
+      runInShell: _runInShell,
     );
     _ffmpegProcess?.stderr.transform(SystemEncoding().decoder).listen((data) {
       debugPrint('FFmpeg stderr: $data');
@@ -338,8 +369,10 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
     final outputFilename =
         'recordings/final_output_${DateTime.now().millisecondsSinceEpoch}.mkv';
 
+    final ffpath = await _ffmpegPath;
+
     // Run FFmpeg in the recordings folder so that the relative file names match.
-    final result = await Process.run(_ffmpegPath, [
+    final result = await Process.run(ffpath, [
       '-y',
       '-f',
       'concat',
@@ -350,7 +383,7 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
       '-c',
       'copy',
       outputFilename,
-    ], runInShell: true);
+    ], runInShell: _runInShell);
 
     debugPrint('Merge stderr: ${result.stderr}');
 
