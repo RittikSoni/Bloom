@@ -8,7 +8,6 @@ import 'package:loom_rs/components/reusable_timer.dart';
 import 'package:loom_rs/core/core.dart';
 import 'package:loom_rs/providers/timer_provider.dart';
 import 'package:loom_rs/screens/confetti_screen.dart';
-import 'package:loom_rs/screens/my_cam_view.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:win32/win32.dart';
 import 'package:loom_rs/helper.dart';
