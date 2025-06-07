@@ -1,5 +1,14 @@
 # 🌸 Bloom
 
+<!-- Centered, accessible, and optimized image for GitHub README -->
+
+<p align="center">
+  <picture>
+    <source srcset="./assets/logo/logo.png" type="image/png">
+    <img src="./assets/logo/logo.png" alt="Bloom: An open-source alternative to Loom" width="180" />
+  </picture>
+</p>
+
 **Bloom** is a Flutter-based screen recording and collaboration tool that makes capturing, editing, and sharing video content seamless and intuitive.
 
 ---
@@ -62,6 +71,7 @@
    ```
 
 3. Run on your device or emulator:
+
    ```bash
    flutter run
    ```
