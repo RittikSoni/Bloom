@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_multi_window
   flutter_acrylic
+  flutter_lite_camera
   screen_retriever_linux
   system_tray
   window_manager
