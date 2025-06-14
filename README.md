@@ -71,7 +71,6 @@
    ```
 
 3. Run on your device or emulator:
-
    ```bash
    flutter run
    ```
