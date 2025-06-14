@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loom_rs/constants/ktheme.dart';
 import 'package:loom_rs/providers/timer_provider.dart';
 
 class ReusableRecordingTimerText extends ConsumerWidget {
@@ -18,10 +19,10 @@ class ReusableRecordingTimerText extends ConsumerWidget {
 
     return Text(
       _format(time),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Colors.red,
+        color: Ktheme.primaryColor,
       ),
     );
   }
