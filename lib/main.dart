@@ -6,7 +6,9 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loom_rs/components/reusable_btn.dart';
 import 'package:loom_rs/components/reusable_field.dart';
+import 'package:loom_rs/components/reusable_radiolist.dart';
 import 'package:loom_rs/components/reusable_timer.dart';
+import 'package:loom_rs/constants/ktheme.dart';
 import 'package:loom_rs/core/core.dart';
 import 'package:loom_rs/providers/timer_provider.dart';
 import 'package:loom_rs/screens/confetti_screen.dart';
@@ -41,16 +43,39 @@ void main(List<String> args) async {
 
     Window.makeWindowFullyTransparent();
     await Window.setEffect(effect: WindowEffect.transparent);
+
     await windowManager.ensureInitialized();
 
     /// FOR CONFETTI SCREEN
     await Window.enterFullscreen();
-    runApp(MaterialApp(home: const ConfettiScreen()));
+    runApp(
+      MaterialApp(
+        theme: ThemeData.light().copyWith(
+          iconTheme: IconThemeData(
+            color: Colors.blueGrey,
+            size: 24, // you can also set a default size here
+          ),
+
+          // If you have icons in AppBar or other primary-colored areas,
+          // you can override them here:
+          primaryIconTheme: IconThemeData(color: Colors.white, size: 28),
+
+          // If you want to theme IconButton specifically:
+          iconButtonTheme: IconButtonThemeData(
+            style: ButtonStyle(
+              iconColor: WidgetStateProperty.all(Colors.blueAccent),
+            ),
+          ),
+        ),
+        home: const ConfettiScreen(),
+      ),
+    );
 
     /// FOR TEMPLATES
     // runApp(const TemplateWindow());
 
     /// FOR CAM VIEW
+    // runApp(const CamViewV2());
     // runApp(const MyCamView());
 
     // await windowManager.setSize(Size(200, 200));
@@ -59,7 +84,9 @@ void main(List<String> args) async {
     // // await windowManager.setAsFrameless();
   } else {
     await windowManager.ensureInitialized();
-
+    Window.makeWindowFullyTransparent();
+    await Window.hideWindowControls();
+    await Window.hideTitle();
     runApp(ProviderScope(child: const ScreenRecorderApp()));
     await Core.mainConfigs();
   }
@@ -437,6 +464,7 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(21, 0, 0, 0),
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -449,14 +477,22 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Image.asset(
+                        'assets/logo/logo.png',
+                        width: 30,
+                        height: 30,
+                      ),
+
+                      Text(
                         'Bloom 🌸',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                       CloseButton(
+                        color: Colors.white24,
                         onPressed: () async {
                           await windowManager.hide();
                         },
@@ -477,31 +513,24 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
                 if (!_isRecording)
                   Column(
                     children: [
-                      RadioListTile<RecordingMode>(
-                        title: Row(
-                          children: [
-                            Icon(Icons.computer_rounded),
-                            SizedBox(width: 5),
-                            const Text('Full Screen'),
-                          ],
-                        ),
+                      GlassyRadioListTile<RecordingMode>(
+                        label: 'Full Screen',
+                        icon: Icons.computer_rounded,
                         value: RecordingMode.full,
                         groupValue: _recordingMode,
+                        activeColor: Ktheme.primaryColor,
                         onChanged: (value) {
                           setState(() {
                             _recordingMode = value!;
                           });
                         },
                       ),
-                      RadioListTile<RecordingMode>(
-                        title: Row(
-                          children: [
-                            Icon(Icons.photo_size_select_small_rounded),
-                            SizedBox(width: 5),
-                            const Text('Specific Region'),
-                          ],
-                        ),
+
+                      GlassyRadioListTile<RecordingMode>(
+                        label: 'Specific Region',
+                        icon: Icons.crop_rounded,
                         value: RecordingMode.region,
+
                         groupValue: _recordingMode,
                         onChanged: (value) {
                           setState(() {
@@ -509,14 +538,9 @@ class _ScreenRecorderHomeState extends State<ScreenRecorderHome> {
                           });
                         },
                       ),
-                      RadioListTile<RecordingMode>(
-                        title: Row(
-                          children: [
-                            Icon(Icons.window_rounded),
-                            SizedBox(width: 5),
-                            const Text('Specific Window'),
-                          ],
-                        ),
+                      GlassyRadioListTile<RecordingMode>(
+                        label: 'Select a Window',
+                        icon: Icons.window_rounded,
                         value: RecordingMode.window,
                         groupValue: _recordingMode,
                         onChanged: (value) {

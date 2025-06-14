@@ -128,13 +128,13 @@ class _ReusableButtonState extends State<ReusableButton> {
           Colors.white.withValues(alpha: 0.25),
         ];
         borderColor = Colors.white;
-        textColor = Colors.black;
+        textColor = Colors.white;
         break;
 
       case ReusableButtonVariant.text:
         gradientColors = [Colors.transparent, Colors.transparent];
         borderColor = Colors.transparent;
-        textColor = Colors.black;
+        textColor = Colors.white;
         break;
     }
 

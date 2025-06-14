@@ -40,9 +40,7 @@ void main() async {
               Icons.healing,
               Icons.radio_button_checked,
             ],
-            onSelected: (index) {
-              print("Selected index: $index");
-            },
+            onSelected: (index) {},
           ),
         ),
       ),
@@ -139,8 +137,8 @@ class OptionsWheelState extends State<OptionsWheel> {
                     padding: EdgeInsets.all(isHighlighted ? 12 : 8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(
-                        isHighlighted ? 0.2 : 0.1,
+                      color: Colors.white.withValues(
+                        alpha: isHighlighted ? 0.2 : 0.1,
                       ),
                       border:
                           isHighlighted
@@ -150,7 +148,9 @@ class OptionsWheelState extends State<OptionsWheel> {
                           isHighlighted
                               ? [
                                 BoxShadow(
-                                  color: Colors.cyanAccent.withOpacity(0.6),
+                                  color: Colors.cyanAccent.withValues(
+                                    alpha: 0.6,
+                                  ),
                                   blurRadius: 15,
                                   spreadRadius: 1,
                                 ),
@@ -218,7 +218,7 @@ class _WheelPainter extends CustomPainter {
     for (int i = 0; i < count; i++) {
       paint.color =
           i == highlighted
-              ? Colors.cyanAccent.withOpacity(0.25)
+              ? Colors.cyanAccent.withValues(alpha: 0.25)
               : Colors.transparent;
 
       canvas.drawArc(

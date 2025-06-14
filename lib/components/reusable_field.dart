@@ -148,7 +148,7 @@ class ReusableTextFormField extends StatelessWidget {
         glassDecoration = BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
           gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.white.withValues(alpha: 0.25)],
+            colors: [Colors.white24, Colors.white.withValues(alpha: 0.25)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
